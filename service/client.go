@@ -8,6 +8,7 @@ import (
 	"louis/pw/cache"
 	"louis/pw/db"
 	"louis/pw/model"
+	"louis/pw/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -119,18 +120,17 @@ func (s *serviceClient) UploadIdentityCard(ctx *gin.Context) {
 		return
 	}
 
-	if err := os.Mkdir("./upload/"+c.ID, 0777); err != nil {
-		log.Println("handler: upload identity card error", err)
-		ctx.AbortWithStatus(http.StatusInternalServerError)
-	}
-	file_path := "./upload/" + c.ID + "/" + uuid.New().String() + ".jpeg"
-	if err := ctx.SaveUploadedFile(file, file_path); err != nil {
+	os.Mkdir("./upload/"+c.ID, 0777)
+	filePath := "./upload/" + c.ID + "/" + uuid.New().String() + ".jpeg"
+	if err := ctx.SaveUploadedFile(file, filePath); err != nil {
 		log.Println("handler: upload identity card error", err)
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 	}
 
+	go utils.CropImage(filePath)
+
 	payload := make(map[string]interface{})
-	payload["id_card_path"] = file_path
+	payload["id_card_path"] = filePath
 
 	uc, err := s.db.Client.UpdateClient(ctx.Param("id"), payload)
 	if err != nil {
