@@ -1,0 +1,8 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/louis.benoist--foucher/Sites/estiam/go/probable-waffle'
+go mod tidy
+go mod vendor
+docker build -t pw-server .
+docker-compose up -d
+make: Leaving directory `/Users/louis.benoist--foucher/Sites/estiam/go/probable-waffle'
+ 

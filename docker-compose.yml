@@ -1,0 +1,28 @@
+version: '3.1'
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: database
+    environment:
+      POSTGRES_PASSWORD: gorm
+      POSTGRES_USER: gorm
+      POSTGRES_DB: gorm
+    ports:
+      - 5432:5432
+  server:
+    image: pw-server
+    restart: always
+    container_name: pw-server
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      PORT: ${PORT}
+    volumes:
+      - ./upload:/root/upload
+  cache:
+    image: redis
+    restart: always
+    container_name: cache
+    ports:
+      - 6379:6379
